@@ -6,7 +6,8 @@
 Created and submitted as Week 15 challenge for Monash University Data Analytics Boot Camp (September 2023).
 
 ## Table of Contents
-
+-Leaflet Part 1 (containing logic.js, style.css, and index file)
+- Readme (this readme file)
 ## Tasks 
 
 - Part 1: Create the Earthquake Visualisation
