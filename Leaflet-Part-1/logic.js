@@ -7,37 +7,27 @@ d3.json(url).then(function(data) {
   createFeatures(data.features);
 });
 
-
-// SET THE FUNCTIONS
-
-function markerSize(magnitude) {
-  return magnitude * 1000;
-};
-
 // marker colour, by depth ( colours from: https://colorbrewer2.org/#type=sequential&scheme=PuRd&n=5)
 function colour(depth){
-  if (depth < 20) return "#f1eef6";
-  else if (depth < 40) return "#d7b5d8";
-  else if (depth < 60) return "#df65b0";
-  else if (depth < 80) return "#dd1c77";
+  if (depth < 10) return "#f1eef6";
+  else if (depth < 20) return "#d7b5d8";
+  else if (depth < 40) return "#df65b0";
+  else if (depth < 70) return "#dd1c77";
   else if (depth < 100) return "#980043";
-  else return "#edf8fb";
+  else return "#943f71";
 };
-
- 
-
 
 // features function:
 function createFeatures(earthquakeData) {
  
 // Give each feature a popup:
   function onEachFeature(feature, layer) {
-      layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>${new Date(feature.properties.time)}</p><hr><p>Magnitude: ${feature.properties.mag}</p>`);
+      layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>${new Date(feature.properties.time)}</p><hr><p>Magnitude: ${feature.properties.mag}</p><hr><p>Depth: ${feature.geometry.coordinates[2]}</p>`);
     }
    // Earthquake markers
   function createCircleMarker(features, latlng) {
     let options = {
-    radius : features.properties.mag*3,
+    radius : features.properties.mag*7,
     color : colour(features.geometry.coordinates[2]),
     fillColor : colour(features.geometry.coordinates[2]),
     fillOpacity : 0.5,
@@ -57,11 +47,6 @@ function createFeatures(earthquakeData) {
   createMap(earthquakes);
   }
 
-
- 
- 
-
-
 // Create a legend:
 let legend = L.control({
   position: "bottomright"
@@ -70,15 +55,14 @@ let legend = L.control({
 // When the layer control is added, insert a div with the class of "legend".
 legend.onAdd = function() {
   let div = L.DomUtil.create("div", "legend");
-  div.innerHTML += "<h3 style = 'text-align: center'>Depth</h3>"
-  depth = [0, 10, 30, 50, 70, 90]
+  div.innerHTML += "<h3 style = 'text-align: center'>Earthquake Recorded Depth</h3>"
+  depth = [0, 20, 40, 60, 100, 150]
   labels = []
   for (let i = 0; i < depth.length; i++) {
     labels.push('<ul style="background-color:' + colour(depth[i] + 1) + '"></i> ' + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+')); 
   }
   div.innerHTML += "<ul>" + labels.join("") + "</ul>";
   return div;
-
 };
 
 
@@ -86,14 +70,13 @@ function createMap(earthquakes) {
   
   // Create the  layers.
   let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors <br> Colours sourced from <a href="https://colorbrewer2.org/#type=sequential&scheme=PuRd&n=5">ColorBrewer</a>'
    });
  
 
     // Create a baseMaps object.
   let baseMaps = {
-    "Street Map": street
-
+    "World Map": street
   };
 
   // Create an overlay object to hold our overlay.
@@ -101,23 +84,20 @@ function createMap(earthquakes) {
     Earthquakes: earthquakes
   };
 
-// This is the Div for "map". This can come at the start or the bottom of the code.
-// Try and get it so the map does not repeat:
+// This is the Div for "map":
 let myMap = L.map("map", {
-  center: [30, 20],
+  center: [20, 40],
   zoom: 2.505,
   layers: [street]
 });
 
   
-// Create a layer control.
-  // Pass it our baseMaps and overlayMaps.
-  // Add the layer control to the map.
+// Layer control:
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
   // Add the info legend to the map.
-legend.addTo(myMap);
+  legend.addTo(myMap);
 
 }
 
